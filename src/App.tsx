@@ -1,14 +1,17 @@
-import { Checkbox, FormControlLabel, FormGroup } from "@mui/material";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Login from "./pages/Login";
+import { Toaster } from "react-hot-toast";
 
 const App = () => {
   return (
-    <div>
-      <FormGroup>
-        <FormControlLabel control={<Checkbox defaultChecked />} label="Label" />
-        <FormControlLabel required control={<Checkbox />} label="Required" />
-        <FormControlLabel disabled control={<Checkbox />} label="Disabled" />
-      </FormGroup>
-    </div>
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+        </Routes>
+      </BrowserRouter>
+      <Toaster />
+    </>
   );
 };
 export default App;
