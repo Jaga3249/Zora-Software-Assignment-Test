@@ -9,7 +9,7 @@ export interface Todo {
   description: string;
   assignedUser: number;
   priority: TodoPriority;
-  tags: string[];
+  tags: string[] | null;
 }
 
 export interface User {
