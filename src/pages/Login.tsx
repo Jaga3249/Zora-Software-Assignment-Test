@@ -28,8 +28,12 @@ const Login = () => {
     setIsLoading(true);
     try {
       const authData = await authApi.login({ username, password });
+      console.log("authdata", authData);
 
-      if (username === authData.username && password === authData.password) {
+      if (
+        username.trim() === authData.username.trim() &&
+        password.trim() === authData.password.trim()
+      ) {
         toast.success("Login successful! Welcome back!");
         login(username);
         navigate("/");
