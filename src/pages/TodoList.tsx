@@ -8,11 +8,6 @@ import {
   Typography,
   Container,
   CircularProgress,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
   InputAdornment,
   FormControl,
   InputLabel,
@@ -20,12 +15,13 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
-import type { Todo, User } from "../../types/types";
-import { todoApi, usersApi } from "../lib/api";
+import type { Todo } from "../../types/types";
 import Layout from "../components/Layout";
 import TodoCard from "../components/TodoCard";
 import CustomModal from "../components/CustomModal";
 import AddTaskForm from "../components/AddTaskForm";
+import { useTodos } from "../hooks/useTodos";
+import { useUsers } from "../hooks/useUsers";
 
 const ITEMS_PER_PAGE = 6;
 
@@ -33,9 +29,6 @@ const TodoList = () => {
   const navigate = useNavigate();
 
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [users, setUsers] = useState<User[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
@@ -45,6 +38,9 @@ const TodoList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const { fetchTodos, handleDeleteTodo, isLoading, isDeleting, setIsDeleting } =
+    useTodos();
+  const { fetchUsers, users } = useUsers();
 
   // Debounce search
   useEffect(() => {
@@ -55,43 +51,12 @@ const TodoList = () => {
     return () => clearTimeout(timer);
   }, [search]);
 
-  // Fetch todos and users
-  const fetchTodos = async () => {
-    try {
-      setIsLoading(true);
-      const data = await todoApi.getAll({
-        status: statusFilter || undefined,
-        assignedUser: userFilter || undefined,
-        _sort: sortBy,
-        _order: sortOrder,
-        _page: currentPage,
-        _limit: ITEMS_PER_PAGE,
-        q: debouncedSearch || undefined,
-      });
-      setTodos(data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchUsers = async () => {
-    try {
-      const data = await usersApi.getAll();
-      setUsers(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   useEffect(() => {
     fetchUsers();
   }, []);
 
   useEffect(() => {
     fetchTodos();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     statusFilter,
     userFilter,
@@ -100,20 +65,6 @@ const TodoList = () => {
     debouncedSearch,
     currentPage,
   ]);
-
-  const handleDelete = (id: string) => setDeleteId(id);
-
-  const confirmDelete = async () => {
-    if (!deleteId) return;
-    try {
-      await todoApi.delete(deleteId);
-      setDeleteId(null);
-      fetchTodos(); // refresh list
-    } catch (err) {
-      console.error(err);
-      alert("Failed to delete task");
-    }
-  };
 
   const totalPages = Math.ceil(todos.length / ITEMS_PER_PAGE);
 
@@ -245,7 +196,7 @@ const TodoList = () => {
             </Typography>
             <Button
               variant="outlined"
-              onClick={() => navigate("/add")}
+              onClick={() => setOpen(true)}
               sx={{ mt: 2 }}
             >
               Create your first task
@@ -270,11 +221,12 @@ const TodoList = () => {
                 );
                 return (
                   <TodoCard
+                    setSelectedId={setDeleteId}
                     key={Math.random()}
+                    setOpen={setIsDeleting}
                     todo={todo}
                     user={user}
                     onEdit={(id) => navigate(`/edit/${id}`)}
-                    onDelete={handleDelete}
                   />
                 );
               })}
@@ -315,25 +267,37 @@ const TodoList = () => {
           </>
         )}
       </Container>
+
       <CustomModal open={open} onClose={() => setOpen(false)} title="Add Task">
-        <AddTaskForm open={open} setOpen={setOpen} />
+        <AddTaskForm open={open} setOpen={setOpen} setTodos={setTodos} />
       </CustomModal>
+      {/* isDeleting */}
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={!!deleteId} onClose={() => setDeleteId(null)}>
-        <DialogTitle>Are you sure?</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            This action cannot be undone. This will permanently delete the task.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteId(null)}>Cancel</Button>
-          <Button onClick={confirmDelete} color="error" variant="contained">
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <CustomModal
+        open={isDeleting}
+        onClose={() => setIsDeleting(false)}
+        title="Confirm Delete"
+        actions={[
+          {
+            label: "Cancel",
+            onClick: () => setIsDeleting(false),
+            variant: "outlined",
+            color: "inherit",
+          },
+          {
+            label: "Delete",
+            onClick: () => handleDeleteTodo(deleteId as string),
+            variant: "contained",
+            color: "error",
+          },
+        ]}
+      >
+        <Typography>
+          Are you sure you want to delete this item? This action cannot be
+          undone.
+        </Typography>
+      </CustomModal>
     </Layout>
   );
 };

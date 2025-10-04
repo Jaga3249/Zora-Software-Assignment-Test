@@ -22,3 +22,13 @@ export interface AuthCredentials {
   username: string;
   password: string;
 }
+export interface FetchTodosParams {
+  status?: string;
+  assignedUser?: string; // must be string to match API
+  priority?: string;
+  _sort?: string;
+  _order?: "asc" | "desc";
+  _page?: number;
+  _limit?: number;
+  q?: string;
+}

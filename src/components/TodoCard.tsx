@@ -17,10 +17,17 @@ interface TodoCardProps {
   todo: Todo;
   user?: User;
   onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  setOpen: (value: boolean) => void;
+  setSelectedId: (value: string) => void;
 }
 
-const TodoCard = ({ todo, user, onEdit, onDelete }: TodoCardProps) => {
+const TodoCard = ({
+  todo,
+  user,
+  onEdit,
+  setOpen,
+  setSelectedId,
+}: TodoCardProps) => {
   const statusConfig = {
     todo: { label: "To Do", color: "info" as const },
     inProgress: { label: "In Progress", color: "warning" as const },
@@ -63,7 +70,10 @@ const TodoCard = ({ todo, user, onEdit, onDelete }: TodoCardProps) => {
             </IconButton>
             <IconButton
               size="small"
-              onClick={() => onDelete(todo.id)}
+              onClick={() => {
+                setOpen(true);
+                setSelectedId(todo.id);
+              }}
               color="error"
             >
               <DeleteIcon />
