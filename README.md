@@ -1,77 +1,161 @@
-<<<<<<< HEAD
-# Zora-Software-Assignment-Test
-=======
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+````md
+# Zora Software Assignment Test
 
-## React Compiler
+A frontend assignment built with **React**, **TypeScript**, **Vite**, and **Material UI**, designed for the Zora Software take-home test.  
+It uses **JSON Server** as a mock backend API, listening on **port 3000**.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🧰 Tech Stack
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- React + TypeScript  
+- Vite for bundling and dev server  
+- Material UI (MUI) for UI components & styling  
+- ESLint for linting & code quality  
+- JSON Server for mock API  
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+---
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## 🚀 Getting Started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Prerequisites
+
+- Node.js (>= 18 recommended)  
+- npm or yarn  
+
+### Installation
+
+```bash
+git clone https://github.com/Jaga3249/Zora-Software-Assignment-Test.git
+cd Zora-Software-Assignment-Test
+npm install
+````
+
+---
+
+## 🖥️ Running the App
+
+### 1️⃣ Start Mock API (JSON Server)
+
+Run the mock backend using `json-server`:
+
+```bash
+npx json-server --watch api.json --port 3000
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+This will start the API at:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+* `http://localhost:3000/todos`
+* `http://localhost:3000/users`
+  *(depending on your `api.json` content)*
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+#### Optional: Add a script in `package.json`
+
+```json
+"scripts": {
+  "server": "json-server --watch api.json --port 3000",
+  "dev": "vite",
+  "build": "vite build",
+  "preview": "vite preview",
+  "lint": "eslint ."
+}
 ```
->>>>>>> 257335a (Initialize Vite project setup)
+
+Then you can simply run:
+
+```bash
+npm run server
+```
+
+---
+
+### 2️⃣ Start Frontend (Vite + Material UI)
+
+In another terminal:
+
+```bash
+npm run dev
+```
+
+* Frontend: `http://localhost:5173`
+* API: `http://localhost:3000`
+
+You can now use **Material UI components** throughout the app.
+
+---
+
+## 📦 Scripts
+
+| Script    | Description                             |
+| --------- | --------------------------------------- |
+| `dev`     | Start frontend dev server with HMR      |
+| `server`  | Run JSON Server mock API (on port 3000) |
+| `build`   | Build frontend for production           |
+| `preview` | Preview production build locally        |
+| `lint`    | Run ESLint checks                       |
+
+---
+
+## 📁 Project Structure
+
+```
+.
+├── public/                # Static assets
+├── src/                   # App source
+│   ├── components/        # Reusable UI components (Material UI)
+│   ├── pages/             # Page-level views
+│   ├── hooks/             # Custom React hooks
+│   ├── lib/               # Utilities, API clients
+│   └── index.tsx          # Entry point
+├── types/                 # Shared TypeScript types
+├── api.json               # Mock API data for JSON Server
+├── index.html             # Root HTML
+├── package.json
+├── vite.config.ts
+├── tsconfig.json
+├── tsconfig.app.json
+├── tsconfig.node.json
+└── eslint.config.js
+```
+
+---
+
+## 🎯 Features
+
+* ⚡ Fast dev environment with **Vite**
+* ✅ Strong typing with **TypeScript**
+* 🛠️ Mock backend with **JSON Server** (port 3000)
+* 🎨 UI built with **Material UI** components
+* 🧹 Pre-configured **ESLint** rules
+* 📂 Organized and scalable project structure
+
+---
+
+## ⚡ Optional: Run Frontend + Backend Together
+
+Install **concurrently** to run both servers with a single command:
+
+```bash
+npm install --save-dev concurrently
+```
+
+Add to `package.json`:
+
+```json
+"scripts": {
+  "start": "concurrently \"npm run server\" \"npm run dev\""
+}
+```
+
+Now run everything with:
+
+```bash
+npm start
+```
+
+---
+
