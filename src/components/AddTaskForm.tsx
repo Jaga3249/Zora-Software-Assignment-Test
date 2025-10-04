@@ -10,38 +10,39 @@ import {
 import type { Todo, User } from "../../types/types";
 import { todoApi, usersApi } from "../lib/api";
 import toast from "react-hot-toast";
-import { fetchTodos } from "../lib/todoApi";
+import { useTodos } from "../hooks/useTodos";
 
 interface AddTaskFormProps {
   open: boolean;
   setOpen: (value: boolean) => void;
   setTodos: (value: Todo[]) => void;
+  task: Todo;
+  setTask: (value: Todo) => void;
+  onUpdate?: (id: string, updatedFields: Partial<Todo>) => Promise<Todo>;
 }
 
-const AddTaskForm = ({ open, setOpen, setTodos }: AddTaskFormProps) => {
-  const [todoList, setTodoList] = useState<Todo[]>([]);
+const AddTaskForm = ({
+  setOpen,
+  setTodos,
+  setTask,
+  task,
+  onUpdate,
+}: AddTaskFormProps) => {
   const [step, setStep] = useState(0);
   const [users, setUsers] = useState<User[]>([]);
-  const [task, setTask] = useState<Todo>({
-    id: "",
-    title: "",
-    description: "",
-    dueDate: "",
-    status: "todo",
-    assignedUser: 1,
-    priority: "low",
-    tags: [],
-  });
-
+  const { todos: todoList } = useTodos();
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const { fetchTodos } = useTodos();
 
-  const { create } = todoApi;
+  const isEditing = !!task.id;
 
-  const handleChange = (field: string, value: any) => {
+  // Handle input changes
+  const handleChange = (field: keyof Todo, value: any) => {
     setTask({ ...task, [field]: value });
     setErrors((prev) => ({ ...prev, [field]: "" })); // clear error on change
   };
 
+  // Step validation
   const validateStep = () => {
     const newErrors: Record<string, string> = {};
     if (step === 0) {
@@ -59,47 +60,52 @@ const AddTaskForm = ({ open, setOpen, setTodos }: AddTaskFormProps) => {
   const nextStep = () => {
     if (validateStep()) setStep((prev) => prev + 1);
   };
-
   const prevStep = () => setStep((prev) => prev - 1);
 
+  // Submit handler
   const handleSubmit = async () => {
     if (!validateStep()) return;
 
     try {
-      const newTask: Todo = { ...task, id: Math.random().toString() };
-      await create(newTask);
-      toast.success("Todo added successfully");
-      const updatedTodo = await fetchTodos();
-      console.log(updatedTodo);
-      setTodos([...updatedTodo]);
+      if (isEditing && onUpdate) {
+        // Update existing task
+        await onUpdate(task.id, task);
+      } else {
+        // Create new task
+        const newTask: Todo = { ...task, id: Math.random().toString() };
+        await todoApi.create(newTask);
+        toast.success("Todo added successfully");
+      }
 
+      const updatedTodo = await fetchTodos();
+      setTodos([...updatedTodo]);
       setOpen(false);
     } catch (err) {
-      toast.error("Failed to add Todo");
+      toast.error("Failed to save Todo");
       console.error(err);
     }
   };
 
+  // Fetch users for assignment
   useEffect(() => {
     const fetchUsers = async () => {
-      const response = await usersApi.getAll();
-      setUsers(response);
+      try {
+        const response = await usersApi.getAll();
+        setUsers(response);
+      } catch (err) {
+        console.error(err);
+      }
     };
     fetchUsers();
   }, []);
 
+  // Available tags from existing todos
   const availableTags = Array.from(
-    new Set(todoList.flatMap((todo) => todo.tags))
+    new Set(todoList.flatMap((todo) => todo.tags || []))
   );
 
   return (
-    <Box
-      sx={{
-        maxWidth: 600,
-        mx: "auto",
-        overflowY: "auto",
-      }}
-    >
+    <Box sx={{ maxWidth: 600, mx: "auto", overflowY: "auto" }}>
       {/* Step 1 */}
       {step === 0 && (
         <Stack spacing={2}>
@@ -130,7 +136,7 @@ const AddTaskForm = ({ open, setOpen, setTodos }: AddTaskFormProps) => {
             multiple
             freeSolo
             options={availableTags}
-            value={task.tags as string[]}
+            value={task.tags || []}
             onChange={(_, newValue) => handleChange("tags", newValue)}
             renderInput={(params) => (
               <TextField {...params} label="Tags" placeholder="Add tags" />
@@ -149,7 +155,7 @@ const AddTaskForm = ({ open, setOpen, setTodos }: AddTaskFormProps) => {
             onChange={(e) => handleChange("status", e.target.value)}
           >
             <MenuItem value="todo">To Do</MenuItem>
-            <MenuItem value="in-progress">In Progress</MenuItem>
+            <MenuItem value="inProgress">In Progress</MenuItem>
             <MenuItem value="done">Done</MenuItem>
           </TextField>
 
@@ -180,7 +186,7 @@ const AddTaskForm = ({ open, setOpen, setTodos }: AddTaskFormProps) => {
           >
             {["high", "low"].map((priority) => (
               <MenuItem key={priority} value={priority}>
-                {priority.charAt(0).toUpperCase() + priority.slice(1)}{" "}
+                {priority.charAt(0).toUpperCase() + priority.slice(1)}
               </MenuItem>
             ))}
           </TextField>
@@ -194,7 +200,7 @@ const AddTaskForm = ({ open, setOpen, setTodos }: AddTaskFormProps) => {
         </Button>
         {step === 1 ? (
           <Button variant="contained" onClick={handleSubmit}>
-            Submit
+            {isEditing ? "Update" : "Submit"}
           </Button>
         ) : (
           <Button variant="contained" onClick={nextStep}>

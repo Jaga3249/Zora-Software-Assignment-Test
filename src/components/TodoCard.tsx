@@ -19,14 +19,17 @@ interface TodoCardProps {
   onEdit: (id: string) => void;
   setOpen: (value: boolean) => void;
   setSelectedId: (value: string) => void;
+  setUpadating: (value: boolean) => void;
+  setSelectedTodo: (value: Todo) => void;
 }
 
 const TodoCard = ({
   todo,
   user,
-  onEdit,
   setOpen,
   setSelectedId,
+  setUpadating,
+  setSelectedTodo,
 }: TodoCardProps) => {
   const statusConfig = {
     todo: { label: "To Do", color: "info" as const },
@@ -63,7 +66,10 @@ const TodoCard = ({
           <Box sx={{ display: "flex", gap: 0.5 }}>
             <IconButton
               size="small"
-              onClick={() => onEdit(todo.id)}
+              onClick={() => {
+                setUpadating(true);
+                setSelectedTodo(todo);
+              }}
               color="primary"
             >
               <EditIcon />
@@ -87,13 +93,13 @@ const TodoCard = ({
 
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}>
           <Chip
-            label={statusConfig[todo.status].label}
-            color={statusConfig[todo.status].color}
+            label={statusConfig[todo.status]?.label || "Unknown"}
+            color={statusConfig[todo.status]?.color || "default"}
             size="small"
           />
           <Chip
-            label={priorityConfig[todo.priority].label}
-            color={priorityConfig[todo.priority].color}
+            label={priorityConfig[todo.priority]?.label || "Unknown"}
+            color={priorityConfig[todo.priority]?.color || "default"}
             size="small"
           />
         </Box>

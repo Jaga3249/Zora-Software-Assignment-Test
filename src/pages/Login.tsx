@@ -28,7 +28,6 @@ const Login = () => {
     setIsLoading(true);
     try {
       const authData = await authApi.login({ username, password });
-      console.log("authdata", authData);
 
       if (
         username.trim() === authData.username.trim() &&

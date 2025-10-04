@@ -7,6 +7,7 @@ export const useTodos = (params?: FetchTodosParams) => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [isUpdating, setIsUpdating] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchTodos = useCallback(
@@ -34,7 +35,6 @@ export const useTodos = (params?: FetchTodosParams) => {
       try {
         await todoApi.delete(id);
         toast.success("Todo deleted successfully");
-        // Refetch todos after deletion
         await fetchTodos();
       } catch (err) {
         console.error(err);
@@ -46,6 +46,28 @@ export const useTodos = (params?: FetchTodosParams) => {
     [fetchTodos]
   );
 
+  const handleUpdateTodo = useCallback(
+    async (id: string, updatedFields: Partial<Todo>) => {
+      setIsUpdating(true);
+      try {
+        const updatedTodo = await todoApi.update(id, updatedFields);
+        toast.success("Todo updated successfully");
+        // Update the local state
+        setTodos((prev) =>
+          prev.map((todo) => (todo.id === id ? updatedTodo : todo))
+        );
+        return updatedTodo;
+      } catch (err) {
+        console.error(err);
+        toast.error("Failed to update todo");
+        throw err;
+      } finally {
+        setIsUpdating(false);
+      }
+    },
+    []
+  );
+
   useEffect(() => {
     fetchTodos();
   }, [fetchTodos]);
@@ -54,10 +76,13 @@ export const useTodos = (params?: FetchTodosParams) => {
     todos,
     isLoading,
     isDeleting,
+    isUpdating,
     setIsDeleting,
+    setTodos,
     error,
     fetchTodos,
-    setTodos,
     handleDeleteTodo,
+    handleUpdateTodo,
+    setIsUpdating,
   };
 };

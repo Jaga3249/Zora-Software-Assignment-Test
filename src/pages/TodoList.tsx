@@ -15,20 +15,18 @@ import {
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import AddIcon from "@mui/icons-material/Add";
-import type { Todo } from "../../types/types";
 import Layout from "../components/Layout";
 import TodoCard from "../components/TodoCard";
 import CustomModal from "../components/CustomModal";
 import AddTaskForm from "../components/AddTaskForm";
 import { useTodos } from "../hooks/useTodos";
 import { useUsers } from "../hooks/useUsers";
+import type { Todo } from "../../types/types";
 
 const ITEMS_PER_PAGE = 6;
 
 const TodoList = () => {
   const navigate = useNavigate();
-
-  const [todos, setTodos] = useState<Todo[]>([]);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("");
@@ -38,8 +36,28 @@ const TodoList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [open, setOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
-  const { fetchTodos, handleDeleteTodo, isLoading, isDeleting, setIsDeleting } =
-    useTodos();
+  const [selectedTodo, setSelectedTodo] = useState<Todo>({
+    id: "",
+    title: "",
+    description: "",
+    dueDate: "",
+    status: "todo",
+    assignedUser: 1,
+    priority: "low",
+    tags: [],
+  });
+  const {
+    fetchTodos,
+    handleDeleteTodo,
+    isLoading,
+    isDeleting,
+    setIsDeleting,
+    todos: todoLists,
+    setTodos,
+    handleUpdateTodo,
+    isUpdating,
+    setIsUpdating,
+  } = useTodos();
   const { fetchUsers, users } = useUsers();
 
   // Debounce search
@@ -56,7 +74,15 @@ const TodoList = () => {
   }, []);
 
   useEffect(() => {
-    fetchTodos();
+    fetchTodos({
+      status: statusFilter || undefined,
+      assignedUser: userFilter || undefined,
+      _sort: sortBy,
+      _order: sortOrder as "asc" | "desc",
+      q: debouncedSearch || undefined,
+      _page: currentPage,
+      _limit: ITEMS_PER_PAGE,
+    });
   }, [
     statusFilter,
     userFilter,
@@ -64,10 +90,12 @@ const TodoList = () => {
     sortOrder,
     debouncedSearch,
     currentPage,
+    fetchTodos,
   ]);
 
-  const totalPages = Math.ceil(todos.length / ITEMS_PER_PAGE);
-
+  const totalPages = Math.ceil(todoLists.length / ITEMS_PER_PAGE);
+  console.log(todoLists);
+  console.log(statusFilter);
   return (
     <Layout>
       <Container maxWidth={false} sx={{ py: 4 }}>
@@ -92,7 +120,16 @@ const TodoList = () => {
             variant="contained"
             startIcon={<AddIcon />}
             onClick={() => {
-              // navigate("/add");
+              setSelectedTodo({
+                id: "",
+                title: "",
+                description: "",
+                dueDate: "",
+                status: "todo",
+                assignedUser: 1,
+                priority: "low",
+                tags: [],
+              });
               setOpen(true);
             }}
             sx={{ height: "fit-content" }}
@@ -189,7 +226,7 @@ const TodoList = () => {
               Loading tasks...
             </Typography>
           </Box>
-        ) : todos.length === 0 ? (
+        ) : todoLists.length === 0 ? (
           <Box sx={{ textAlign: "center", py: 12 }}>
             <Typography color="text.secondary" gutterBottom>
               No tasks found
@@ -215,7 +252,7 @@ const TodoList = () => {
                 gap: 3,
               }}
             >
-              {todos.map((todo) => {
+              {todoLists.map((todo) => {
                 const user = users.find(
                   (u) => u.id === todo.assignedUser.toString()
                 );
@@ -224,6 +261,8 @@ const TodoList = () => {
                     setSelectedId={setDeleteId}
                     key={Math.random()}
                     setOpen={setIsDeleting}
+                    setUpadating={setIsUpdating}
+                    setSelectedTodo={setSelectedTodo}
                     todo={todo}
                     user={user}
                     onEdit={(id) => navigate(`/edit/${id}`)}
@@ -269,7 +308,13 @@ const TodoList = () => {
       </Container>
 
       <CustomModal open={open} onClose={() => setOpen(false)} title="Add Task">
-        <AddTaskForm open={open} setOpen={setOpen} setTodos={setTodos} />
+        <AddTaskForm
+          open={open}
+          setOpen={setOpen}
+          setTodos={setTodos}
+          task={selectedTodo}
+          setTask={setSelectedTodo}
+        />
       </CustomModal>
       {/* isDeleting */}
 
@@ -297,6 +342,20 @@ const TodoList = () => {
           Are you sure you want to delete this item? This action cannot be
           undone.
         </Typography>
+      </CustomModal>
+      <CustomModal
+        open={isUpdating}
+        onClose={() => setIsUpdating(false)}
+        title="Confirm Delete"
+      >
+        <AddTaskForm
+          task={selectedTodo}
+          setTask={setSelectedTodo}
+          open={isUpdating}
+          setOpen={setIsUpdating}
+          setTodos={setTodos}
+          onUpdate={handleUpdateTodo}
+        />
       </CustomModal>
     </Layout>
   );
