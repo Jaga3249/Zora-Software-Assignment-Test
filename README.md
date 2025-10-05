@@ -5,8 +5,8 @@
 ````md
 # Zora Software Assignment Test
 
-A frontend assignment built with **React**, **TypeScript**, **Vite**, and **Material UI**, designed for the Zora Software take-home test.  
-It uses **JSON Server** as a mock backend API, listening on **port 3000**.
+A frontend assignment built with React, TypeScript, Vite, and Material UI, designed for the Zora Software take-home test.  
+It uses JSON Server as a mock backend API, listening on port 3000.
 
 ---
 
