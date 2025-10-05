@@ -1,4 +1,6 @@
+Perfect 👍 I’ll merge everything and give you a **fully modified README** that includes the **JSON Server installation step**, clean formatting, and all the details you asked for.
 
+Here’s the final version:
 
 ---
 
@@ -25,7 +27,7 @@ It uses JSON Server as a mock backend API, listening on port 3000.
 ### Prerequisites
 
 - Node.js (>= 18 recommended)  
-- npm or yarn  
+- npm or yarn package manager  
 
 ### Installation
 
@@ -33,7 +35,21 @@ It uses JSON Server as a mock backend API, listening on port 3000.
 git clone https://github.com/Jaga3249/Zora-Software-Assignment-Test.git
 cd Zora-Software-Assignment-Test
 npm install
-````
+```
+
+### Install JSON Server (for mock API)
+
+Global install:
+
+```bash
+npm install -g json-server
+```
+
+Or as a dev dependency:
+
+```bash
+npm install --save-dev json-server
+```
 
 ---
 
@@ -50,7 +66,7 @@ npx json-server --watch api.json --port 3000
 This will start the API at:
 
 * `http://localhost:3000/todos`
-* `http://localhost:3000/users`
+* `http://localhost:3000/users`  
   *(depending on your `api.json` content)*
 
 #### Optional: Add a script in `package.json`
@@ -81,10 +97,10 @@ In another terminal:
 npm run dev
 ```
 
-* Frontend: `http://localhost:5173`
-* API: `http://localhost:3000`
+* Frontend: `http://localhost:5173`  
+* API: `http://localhost:3000`  
 
-You can now use **Material UI components** throughout the app.
+You can now use Material UI components throughout the app.
 
 ---
 
@@ -126,12 +142,12 @@ You can now use **Material UI components** throughout the app.
 
 ## 🎯 Features
 
-* ⚡ Fast dev environment with **Vite**
-* ✅ Strong typing with **TypeScript**
-* 🛠️ Mock backend with **JSON Server** (port 3000)
-* 🎨 UI built with **Material UI** components
-* 🧹 Pre-configured **ESLint** rules
-* 📂 Organized and scalable project structure
+* ⚡ Fast dev environment with Vite  
+* ✅ Strong typing with TypeScript  
+* 🛠️ Mock backend with JSON Server (port 3000)  
+* 🎨 UI built with Material UI components  
+* 🧹 Pre-configured ESLint rules  
+* 📂 Organized and scalable project structure  
 
 ---
 
@@ -156,6 +172,9 @@ Now run everything with:
 ```bash
 npm start
 ```
+
+---
+````
 
 ---
 
