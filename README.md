@@ -1,10 +1,3 @@
-Perfect 👍 I’ll merge everything and give you a **fully modified README** that includes the **JSON Server installation step**, clean formatting, and all the details you asked for.
-
-Here’s the final version:
-
----
-
-````md
 # Zora Software Assignment Test
 
 A frontend assignment built with React, TypeScript, Vite, and Material UI, designed for the Zora Software take-home test.  
@@ -65,8 +58,8 @@ npx json-server --watch api.json --port 3000
 
 This will start the API at:
 
-* `http://localhost:3000/todos`
-* `http://localhost:3000/users`  
+- `http://localhost:3000/todos`  
+- `http://localhost:3000/users`  
   *(depending on your `api.json` content)*
 
 #### Optional: Add a script in `package.json`
@@ -97,8 +90,8 @@ In another terminal:
 npm run dev
 ```
 
-* Frontend: `http://localhost:5173`  
-* API: `http://localhost:3000`  
+- Frontend: `http://localhost:5173`  
+- API: `http://localhost:3000`  
 
 You can now use Material UI components throughout the app.
 
@@ -118,7 +111,7 @@ You can now use Material UI components throughout the app.
 
 ## 📁 Project Structure
 
-```
+```bash
 .
 ├── public/                # Static assets
 ├── src/                   # App source
@@ -142,12 +135,12 @@ You can now use Material UI components throughout the app.
 
 ## 🎯 Features
 
-* ⚡ Fast dev environment with Vite  
-* ✅ Strong typing with TypeScript  
-* 🛠️ Mock backend with JSON Server (port 3000)  
-* 🎨 UI built with Material UI components  
-* 🧹 Pre-configured ESLint rules  
-* 📂 Organized and scalable project structure  
+- ⚡ Fast dev environment with Vite  
+- ✅ Strong typing with TypeScript  
+- 🛠️ Mock backend with JSON Server (port 3000)  
+- 🎨 UI built with Material UI components  
+- 🧹 Pre-configured ESLint rules  
+- 📂 Organized and scalable project structure  
 
 ---
 
@@ -174,7 +167,3 @@ npm start
 ```
 
 ---
-````
-
----
-
